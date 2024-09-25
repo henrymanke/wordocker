@@ -1,0 +1,8 @@
+# Ignore Docker-related files
+.docker/
+
+# Ignore WordPress files
+wordpress/
+
+# Ignore environment files
+.env
