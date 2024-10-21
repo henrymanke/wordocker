@@ -1,6 +1,6 @@
 services:
-  db:
-    image: mariadb
+  wordpress_db:
+    image: mariadb:${MARIADB_VERSION:-latest}
     volumes:
       - db_data:/var/lib/mysql
     environment:
@@ -12,19 +12,21 @@ services:
       - wp_network
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -e 'SELECT 1'"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   wordpress:
-    image: wordpress:latest
+    image: wordpress:${WORDPRESS_VERSION:-latest}
     depends_on:
-      - db
+      wordpress_db:
+        condition: service_healthy
     ports:
       - "${WORDPRESS_PORT}:80"
     environment:
-      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_HOST: wordpress_db:3306
       WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
       WORDPRESS_DB_USER: ${MYSQL_USER}
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}

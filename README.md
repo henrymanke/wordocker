@@ -32,7 +32,7 @@ Ensure you have the following installed:
 
 3. Start the services using Docker Compose:
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
 4. Open your browser and access WordPress:
@@ -44,18 +44,29 @@ Ensure you have the following installed:
 To tailor the setup to your needs, modify the following environment variables in the `.env` file:
 
 ```plaintext
-MYSQL_ROOT_PASSWORD=rootpassword       # The root password for MySQL.
-MYSQL_DATABASE=wordpress               # The MySQL database name.
-MYSQL_USER=wp_user                     # The MySQL user.
-MYSQL_PASSWORD=wp_password             # The MySQL user password.
-WORDPRESS_PORT=8080                    # The port where WordPress will be accessible.
-WORDPRESS_TABLE_PREFIX=wp_             # The table prefix for WordPress.
+# MySQL Database Configuration
+MYSQL_ROOT_PASSWORD=<your_root_password>        # The root password for MySQL.
+MYSQL_DATABASE=<your_db_name>                   # The MySQL database name.
+MYSQL_USER=<your_db_user>                       # The MySQL user.
+MYSQL_PASSWORD=<your_db_user_password>          # The MySQL user password.
+
+# WordPress Configuration
+WORDPRESS_PORT=<your_port>                      # The port where WordPress will be accessible.
+WORDPRESS_TABLE_PREFIX=<your_prefix>            # The table prefix for WordPress.
+
+# Version Control
+MARIADB_VERSION=10.5                            # Optional: Set a specific version for MariaDB
+WORDPRESS_VERSION=5.7                           # Optional: Set a specific version for WordPress
 ```
 
 After making any changes, restart the services:
 ```bash
-docker-compose down
-docker-compose up -d
+docker compose down
+docker compose up -d
+```
+OR
+```bash
+docker compose restart <service>
 ```
 
 ### Persisting Data:
@@ -68,7 +79,7 @@ This setup ensures your data persists even after restarting or stopping the cont
 
 - **MySQL Healthcheck**: Monitors if MySQL is up and running using the following command:
    ```bash
-   mysql -u${MYSQL_USER} -p${MYSQL_PASSWORD} -e 'SELECT 1'
+   healthcheck.sh --connect --innodb_initialized
    ```
 - **WordPress Healthcheck**: Validates that WordPress is responding correctly:
    ```bash
@@ -88,7 +99,7 @@ Before submitting or deploying, ensure the following:
 ### Troubleshooting:
 - To inspect logs:
    ```bash
-   docker-compose logs
+   docker compose logs
    ```
 - If a container crashes, it will automatically restart due to the `restart: always` policy.
 
